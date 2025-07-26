@@ -2,19 +2,19 @@
 
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { AlertTriangle, Leaf, Loader2, Zap, Flame, FileText } from 'lucide-react';
+import { Leaf, Loader2, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { calculateEmissions, type EmissionResult } from './actions';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const [invoiceText, setInvoiceText] = useState('');
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<EmissionResult | null>(null);
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -27,11 +27,19 @@ export default function Home() {
       return;
     }
     setLoading(true);
-    setResult(null);
 
     try {
       const emissionData = await calculateEmissions(invoiceText);
-      setResult(emissionData);
+      
+      // Save to history in local storage
+      const history = JSON.parse(localStorage.getItem('emissionHistory') || '[]');
+      history.unshift(emissionData);
+      localStorage.setItem('emissionHistory', JSON.stringify(history));
+
+      // Save current result and navigate
+      localStorage.setItem('currentEmissionResult', JSON.stringify(emissionData));
+      router.push('/result');
+
     } catch (err) {
       const error = err as Error;
       toast({
@@ -91,76 +99,6 @@ export default function Home() {
             </form>
           </CardContent>
         </Card>
-
-        {result && (
-          <section id="results" className="space-y-6 animate-in fade-in-50 duration-500">
-            {result.warnings.length > 0 && (
-              <Alert variant="destructive">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertTitle>Compliance Warning</AlertTitle>
-                <AlertDescription>
-                  <ul className="list-disc pl-5">
-                    {result.warnings.map((warning, index) => (
-                      <li key={index}>{warning}</li>
-                    ))}
-                  </ul>
-                </AlertDescription>
-              </Alert>
-            )}
-
-            <Card className="bg-primary/5 text-center shadow-lg">
-              <CardHeader>
-                <CardDescription>Total CO₂e Emissions</CardDescription>
-                <CardTitle className="text-5xl font-extrabold text-primary">
-                  {result.totalEmissions.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">kg CO₂e</p>
-              </CardContent>
-            </Card>
-
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <Card className="shadow-md">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-accent">
-                    <Zap className="h-6 w-6" />
-                    Electricity
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Usage:</span>
-                    <span className="font-medium">{result.electricity.kwh.toLocaleString()} kWh</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Emissions:</span>
-                    <span className="font-medium">{result.electricity.emissions.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} kg CO₂e</span>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="shadow-md">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-accent">
-                    <Flame className="h-6 w-6" />
-                    Diesel
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Usage:</span>
-                    <span className="font-medium">{result.diesel.liters.toLocaleString()} Liters</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Emissions:</span>
-                    <span className="font-medium">{result.diesel.emissions.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} kg CO₂e</span>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </section>
-        )}
       </div>
     </main>
   );

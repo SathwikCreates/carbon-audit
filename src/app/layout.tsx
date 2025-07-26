@@ -1,6 +1,7 @@
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
+import { SiteHeader } from '@/components/site-header';
 
 export const metadata: Metadata = {
   title: 'Emission Audit',
@@ -20,7 +21,10 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased bg-background text-foreground min-h-screen">
-        {children}
+        <div className="relative flex min-h-screen flex-col">
+          <SiteHeader />
+          <div className="flex-1">{children}</div>
+        </div>
         <Toaster />
       </body>
     </html>

@@ -8,6 +8,8 @@ const ELECTRICITY_THRESHOLD = 12000; // kWh
 const DIESEL_THRESHOLD = 1000; // liters
 
 export interface EmissionResult {
+  id: string;
+  date: string;
   totalEmissions: number;
   electricity: {
     kwh: number;
@@ -44,6 +46,8 @@ export async function calculateEmissions(invoiceText: string): Promise<EmissionR
     }
 
     return {
+      id: new Date().toISOString(),
+      date: new Date().toISOString(),
       totalEmissions,
       electricity: {
         kwh: electricityKwh,
