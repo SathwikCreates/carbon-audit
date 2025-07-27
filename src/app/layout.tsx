@@ -18,15 +18,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={inter.variable}>
-      <body>
-        <div className={cn("min-h-screen bg-background font-sans antialiased")}>
-            <div className="relative flex min-h-screen flex-col">
-            <SiteHeader />
-            <div className="flex-1">{children}</div>
-            </div>
-            <Toaster />
+    <html lang="en" suppressHydrationWarning>
+      <body className={cn("min-h-screen bg-background font-sans antialiased", inter.variable)}>
+        <div className="relative flex min-h-screen flex-col">
+          <SiteHeader />
+          <div className="flex-1">{children}</div>
         </div>
+        <Toaster />
       </body>
     </html>
   );
