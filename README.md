@@ -119,8 +119,8 @@ carbon-audit-ai/
 1. **Clone the project**
 
 ```bash
-git clone https://github.com/your-username/carbon-audit-ai.git
-cd carbon-audit-ai
+git clone https://github.com/SathwikCreates/carbon-audit.git
+cd carbon-audit
 
 Install dependencies
 npm install
