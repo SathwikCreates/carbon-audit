@@ -154,8 +154,9 @@ A: Yes, if you extract text using OCR tools like Tesseract or Firebase Vision an
 
 🔄 Sync audit history via Firestore
 
-🧑‍💻 Author
-Sathwik R.
+🧑‍💻 Developed by: 
+                Sathwik R.
+                Sowmya Mucharla.
 🛠 Built during Internship 2025
 🌍 Focused on climate tech, NLP, and carbon automation
 
